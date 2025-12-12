@@ -23,40 +23,22 @@ export default function Overview() {
     )
   }
 
-  if (!stats) {
-    return (
-      <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
-        Failed to load summary statistics
-      </div>
-    )
+  // Default stats if API fails
+  const defaultStats: SummaryStats = {
+    total_records: 0,
+    unique_cell_ids: 0,
+    mean_rssi: -90,
+    median_rssi: -90,
+    weak_signal_count: 0,
+    weak_signal_percent: 0,
+    good_signal_count: 0,
+    good_signal_percent: 0,
+    recommended_towers: 0,
+    coverage_area_percent: 0,
   }
 
-  const metrics = [
-    {
-      label: 'Total Records',
-      value: stats.total_records.toLocaleString(),
-      icon: Signal,
-      color: 'bg-blue-500',
-    },
-    {
-      label: 'Unique Cell IDs',
-      value: stats.unique_cell_ids.toString(),
-      icon: Radio,
-      color: 'bg-green-500',
-    },
-    {
-      label: 'Mean RSSI',
-      value: `${stats.mean_rssi.toFixed(2)} dBm`,
-      icon: TrendingUp,
-      color: 'bg-purple-500',
-    },
-    {
-      label: 'Recommended Towers',
-      value: stats.recommended_towers.toString(),
-      icon: Radio,
-      color: 'bg-orange-500',
-    },
-  ]
+  const displayStats = stats || defaultStats
+  const hasApiData = stats !== null
 
   return (
     <div className="space-y-6">
@@ -65,6 +47,13 @@ export default function Overview() {
         <p className="text-gray-600">
           Comprehensive analysis of cellular network planning based on real-world signal strength data
         </p>
+        {!hasApiData && (
+          <div className="mt-4 bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded">
+            <p className="text-sm">
+              ⚠️ API connection unavailable. Displaying static content. Some features may be limited.
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Key Visualizations from Analysis */}
@@ -107,7 +96,32 @@ export default function Overview() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {metrics.map((metric, idx) => {
+        {[
+          {
+            label: 'Total Records',
+            value: displayStats.total_records.toLocaleString(),
+            icon: Signal,
+            color: 'bg-blue-500',
+          },
+          {
+            label: 'Unique Cell IDs',
+            value: displayStats.unique_cell_ids.toString(),
+            icon: Radio,
+            color: 'bg-green-500',
+          },
+          {
+            label: 'Mean RSSI',
+            value: `${displayStats.mean_rssi.toFixed(2)} dBm`,
+            icon: TrendingUp,
+            color: 'bg-purple-500',
+          },
+          {
+            label: 'Recommended Towers',
+            value: displayStats.recommended_towers.toString(),
+            icon: Radio,
+            color: 'bg-orange-500',
+          },
+        ].map((metric, idx) => {
           const Icon = metric.icon
           return (
             <div key={idx} className="bg-white rounded-lg shadow p-6">
@@ -131,22 +145,22 @@ export default function Overview() {
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <span className="text-sm text-gray-600">Weak Signal</span>
-              <span className="text-lg font-semibold text-red-600">{stats.weak_signal_percent.toFixed(1)}%</span>
+              <span className="text-lg font-semibold text-red-600">{displayStats.weak_signal_percent.toFixed(1)}%</span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2">
               <div
                 className="bg-red-500 h-2 rounded-full"
-                style={{ width: `${stats.weak_signal_percent}%` }}
+                style={{ width: `${displayStats.weak_signal_percent}%` }}
               ></div>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-gray-600">Good Signal</span>
-              <span className="text-lg font-semibold text-green-600">{stats.good_signal_percent.toFixed(1)}%</span>
+              <span className="text-lg font-semibold text-green-600">{displayStats.good_signal_percent.toFixed(1)}%</span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2">
               <div
                 className="bg-green-500 h-2 rounded-full"
-                style={{ width: `${stats.good_signal_percent}%` }}
+                style={{ width: `${displayStats.good_signal_percent}%` }}
               ></div>
             </div>
           </div>

@@ -1,6 +1,7 @@
 import axios from 'axios'
 
-const API_BASE = '/api'
+// Use environment variable for API base URL, fallback to /api for local development
+const API_BASE = import.meta.env.VITE_API_BASE_URL || '/api'
 
 export interface SummaryStats {
   total_records: number

@@ -33,10 +33,11 @@ export default function UserAnalysis() {
       setLoading(true)
       // Always load all users data
       const signalData = await api.getData()
-      setData(signalData)
+      // Ensure data is always an array
+      setData(Array.isArray(signalData) ? signalData : [])
       
       const coverage = await api.getCoverage()
-      setSummary(coverage.slice(0, 50))
+      setSummary(Array.isArray(coverage) ? coverage.slice(0, 50) : [])
       setLoading(false)
     }
     loadData()
@@ -54,7 +55,9 @@ export default function UserAnalysis() {
 
   // Normalize and group by body position
   // Filter out invalid RSSI values (0, null, undefined, or extremely positive values)
-  const bodyPositionData = data
+  // Ensure data is an array
+  const safeData = Array.isArray(data) ? data : []
+  const bodyPositionData = safeData
     .filter(d => {
       const hasPosition = d.body_position && d.body_position.trim() !== ''
       const hasValidRssi = d.rssi !== undefined && 
@@ -102,10 +105,10 @@ export default function UserAnalysis() {
     const pos = stat.position
     return {
       position: `${stat.icon} ${pos}`,
-      excellent: data.filter(d => normalizePosition(d.body_position) === pos && d.rssi! > -70).length,
-      good: data.filter(d => normalizePosition(d.body_position) === pos && d.rssi! > -85 && d.rssi! <= -70).length,
-      fair: data.filter(d => normalizePosition(d.body_position) === pos && d.rssi! > -100 && d.rssi! <= -85).length,
-      poor: data.filter(d => normalizePosition(d.body_position) === pos && d.rssi! <= -100).length,
+      excellent: safeData.filter(d => normalizePosition(d.body_position) === pos && d.rssi! > -70).length,
+      good: safeData.filter(d => normalizePosition(d.body_position) === pos && d.rssi! > -85 && d.rssi! <= -70).length,
+      fair: safeData.filter(d => normalizePosition(d.body_position) === pos && d.rssi! > -100 && d.rssi! <= -85).length,
+      poor: safeData.filter(d => normalizePosition(d.body_position) === pos && d.rssi! <= -100).length,
     }
   })
 
@@ -117,9 +120,9 @@ export default function UserAnalysis() {
     'Count': Math.min(100, (stat.count / Math.max(...bodyPositionStats.map(s => s.count))) * 100),
   }))
 
-  const hasLocation = data.some(d => d.x !== undefined && d.y !== undefined)
+  const hasLocation = safeData.some(d => d.x !== undefined && d.y !== undefined)
   const locationData = hasLocation
-    ? data
+    ? safeData
         .filter(d => d.x !== undefined && d.y !== undefined && d.rssi !== undefined)
         .slice(0, 2000)
         .map(d => ({ 
@@ -131,7 +134,7 @@ export default function UserAnalysis() {
     : []
 
   // Time series if timestamp available
-  const timeSeriesData = data
+  const timeSeriesData = safeData
     .filter(d => d.timestamp && d.rssi !== undefined)
     .sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0))
     .slice(0, 500)
@@ -142,12 +145,12 @@ export default function UserAnalysis() {
     }))
 
   // Signal quality categories - count records with RSSI
-  const totalWithRssi = data.filter(d => d.rssi !== undefined).length
+  const totalWithRssi = safeData.filter(d => d.rssi !== undefined).length
   const signalQuality = {
-    excellent: data.filter(d => d.rssi !== undefined && d.rssi! > -70).length,
-    good: data.filter(d => d.rssi !== undefined && d.rssi! > -85 && d.rssi! <= -70).length,
-    fair: data.filter(d => d.rssi !== undefined && d.rssi! > -100 && d.rssi! <= -85).length,
-    poor: data.filter(d => d.rssi !== undefined && d.rssi! <= -100).length,
+    excellent: safeData.filter(d => d.rssi !== undefined && d.rssi! > -70).length,
+    good: safeData.filter(d => d.rssi !== undefined && d.rssi! > -85 && d.rssi! <= -70).length,
+    fair: safeData.filter(d => d.rssi !== undefined && d.rssi! > -100 && d.rssi! <= -85).length,
+    poor: safeData.filter(d => d.rssi !== undefined && d.rssi! <= -100).length,
     total: totalWithRssi,
   }
 
@@ -164,7 +167,7 @@ export default function UserAnalysis() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600">Total Records</p>
-              <p className="text-2xl font-bold text-gray-900">{data.length.toLocaleString()}</p>
+              <p className="text-2xl font-bold text-gray-900">{safeData.length.toLocaleString()}</p>
             </div>
             <Activity className="w-8 h-8 text-blue-500" />
           </div>
@@ -174,8 +177,8 @@ export default function UserAnalysis() {
             <div>
               <p className="text-sm text-gray-600">Mean RSSI</p>
               <p className="text-2xl font-bold text-gray-900">
-                {data.length > 0 && data.some(d => d.rssi)
-                  ? `${(data.filter(d => d.rssi).reduce((sum, d) => sum + (d.rssi || 0), 0) / data.filter(d => d.rssi).length).toFixed(2)} dBm`
+                {safeData.length > 0 && safeData.some(d => d.rssi)
+                  ? `${(safeData.filter(d => d.rssi).reduce((sum, d) => sum + (d.rssi || 0), 0) / safeData.filter(d => d.rssi).length).toFixed(2)} dBm`
                   : 'N/A'}
               </p>
             </div>
@@ -187,7 +190,7 @@ export default function UserAnalysis() {
             <div>
               <p className="text-sm text-gray-600">Unique Cells</p>
               <p className="text-2xl font-bold text-gray-900">
-                {new Set(data.filter(d => d.cell_id).map(d => d.cell_id)).size}
+                {new Set(safeData.filter(d => d.cell_id).map(d => d.cell_id)).size}
               </p>
             </div>
             <MapPin className="w-8 h-8 text-purple-500" />
@@ -198,7 +201,7 @@ export default function UserAnalysis() {
             <div>
               <p className="text-sm text-gray-600">Body Positions</p>
               <p className="text-2xl font-bold text-gray-900">
-                {new Set(data.filter(d => d.body_position).map(d => normalizePosition(d.body_position))).size}
+                {new Set(safeData.filter(d => d.body_position).map(d => normalizePosition(d.body_position))).size}
               </p>
             </div>
             <TrendingUp className="w-8 h-8 text-orange-500" />

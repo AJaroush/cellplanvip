@@ -33,7 +33,7 @@ export default function NetworkPlanner() {
       setLoading(true)
       try {
         const signalData = await api.getData()
-        setData(signalData)
+        setData(Array.isArray(signalData) ? signalData : [])
       } catch (error) {
         console.error('Error loading data:', error)
       } finally {

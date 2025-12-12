@@ -29,7 +29,8 @@ export default function Visualizations() {
     const loadData = async () => {
       setLoading(true)
       const signalData = await api.getData()
-      setData(signalData)
+      // Ensure data is always an array
+      setData(Array.isArray(signalData) ? signalData : [])
       setLoading(false)
     }
     loadData()
@@ -44,8 +45,10 @@ export default function Visualizations() {
   }
 
   // Normalize and prepare data
-
-  const bodyPositionData = data
+  // Ensure data is an array
+  const safeData = Array.isArray(data) ? data : []
+  
+  const bodyPositionData = safeData
     .filter(d => d.body_position && d.rssi !== undefined)
     .reduce((acc: any, d) => {
       const normalized = normalizePosition(d.body_position)
@@ -84,7 +87,7 @@ export default function Visualizations() {
   const rssiBins = [-140, -120, -100, -80, -60, -40, -20, 0]
   const rssiDistribution = rssiBins.slice(0, -1).map((bin, idx) => {
     const nextBin = rssiBins[idx + 1]
-    const count = data.filter(d => d.rssi !== undefined && d.rssi! >= bin && d.rssi! < nextBin).length
+    const count = safeData.filter(d => d.rssi !== undefined && d.rssi! >= bin && d.rssi! < nextBin).length
     return {
       range: `${bin} to ${nextBin}`,
       count,
@@ -94,10 +97,10 @@ export default function Visualizations() {
 
   // Signal quality pie chart
   const signalQualityPie = [
-    { name: 'Excellent (>-70)', value: data.filter(d => d.rssi !== undefined && d.rssi! > -70).length, fill: '#10b981' },
-    { name: 'Good (-70 to -85)', value: data.filter(d => d.rssi !== undefined && d.rssi! > -85 && d.rssi! <= -70).length, fill: '#3b82f6' },
-    { name: 'Fair (-85 to -100)', value: data.filter(d => d.rssi !== undefined && d.rssi! > -100 && d.rssi! <= -85).length, fill: '#f59e0b' },
-    { name: 'Poor (<-100)', value: data.filter(d => d.rssi !== undefined && d.rssi! <= -100).length, fill: '#ef4444' },
+    { name: 'Excellent (>-70)', value: safeData.filter(d => d.rssi !== undefined && d.rssi! > -70).length, fill: '#10b981' },
+    { name: 'Good (-70 to -85)', value: safeData.filter(d => d.rssi !== undefined && d.rssi! > -85 && d.rssi! <= -70).length, fill: '#3b82f6' },
+    { name: 'Fair (-85 to -100)', value: safeData.filter(d => d.rssi !== undefined && d.rssi! > -100 && d.rssi! <= -85).length, fill: '#f59e0b' },
+    { name: 'Poor (<-100)', value: safeData.filter(d => d.rssi !== undefined && d.rssi! <= -100).length, fill: '#ef4444' },
   ].filter(item => item.value > 0)
 
   // Body position distribution
@@ -107,9 +110,9 @@ export default function Visualizations() {
     fill: getPositionColor(stat.position),
   }))
 
-  const hasLocation = data.some(d => d.x !== undefined && d.y !== undefined)
+  const hasLocation = safeData.some(d => d.x !== undefined && d.y !== undefined)
   const locationData = hasLocation
-    ? data
+    ? safeData
         .filter(d => d.x !== undefined && d.y !== undefined && d.rssi !== undefined)
         .slice(0, 3000)
         .map(d => ({ 
@@ -121,7 +124,7 @@ export default function Visualizations() {
     : []
 
   // Time series data
-  const timeSeriesData = data
+  const timeSeriesData = safeData
     .filter(d => d.timestamp && d.rssi !== undefined)
     .sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0))
     .slice(0, 500)
@@ -132,7 +135,7 @@ export default function Visualizations() {
     }))
 
   // Cell performance
-  const cellPerformance = data
+  const cellPerformance = safeData
     .filter(d => d.cell_id && d.rssi !== undefined)
     .reduce((acc: any, d) => {
       if (!acc[d.cell_id!]) {
@@ -351,24 +354,24 @@ export default function Visualizations() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="text-center p-4 bg-blue-50 rounded-lg">
             <p className="text-sm text-gray-600">Total Records</p>
-            <p className="text-2xl font-bold text-gray-900">{data.length.toLocaleString()}</p>
+            <p className="text-2xl font-bold text-gray-900">{safeData.length.toLocaleString()}</p>
           </div>
           <div className="text-center p-4 bg-green-50 rounded-lg">
             <p className="text-sm text-gray-600">With RSSI</p>
             <p className="text-2xl font-bold text-gray-900">
-              {data.filter(d => d.rssi !== undefined).length.toLocaleString()}
+              {safeData.filter(d => d.rssi !== undefined).length.toLocaleString()}
             </p>
           </div>
           <div className="text-center p-4 bg-purple-50 rounded-lg">
             <p className="text-sm text-gray-600">With Location</p>
             <p className="text-2xl font-bold text-gray-900">
-              {data.filter(d => d.x !== undefined && d.y !== undefined).length.toLocaleString()}
+              {safeData.filter(d => d.x !== undefined && d.y !== undefined).length.toLocaleString()}
             </p>
           </div>
           <div className="text-center p-4 bg-orange-50 rounded-lg">
             <p className="text-sm text-gray-600">Body Positions</p>
             <p className="text-2xl font-bold text-gray-900">
-              {new Set(data.filter(d => d.body_position).map(d => normalizePosition(d.body_position))).size}
+              {new Set(safeData.filter(d => d.body_position).map(d => normalizePosition(d.body_position))).size}
             </p>
           </div>
         </div>

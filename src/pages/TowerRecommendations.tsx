@@ -25,7 +25,7 @@ export default function TowerRecommendations() {
       setTowers(towerData)
       
       const signalData = await api.getData()
-      setData(signalData)
+      setData(Array.isArray(signalData) ? signalData : [])
       setLoading(false)
     }
     loadData()

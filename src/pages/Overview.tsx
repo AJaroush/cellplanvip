@@ -108,7 +108,7 @@ export default function Overview() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {[
           {
             label: 'Total Records',
@@ -127,12 +127,6 @@ export default function Overview() {
             value: `${(displayStats?.mean_rssi ?? -90).toFixed(2)} dBm`,
             icon: TrendingUp,
             color: 'bg-purple-500',
-          },
-          {
-            label: 'Recommended Towers',
-            value: (displayStats?.recommended_towers ?? 0).toString(),
-            icon: Radio,
-            color: 'bg-orange-500',
           },
         ].map((metric, idx) => {
           const Icon = metric.icon
@@ -191,7 +185,7 @@ export default function Overview() {
               <ul className="list-disc list-inside space-y-1">
                 <li>Signal Strength Analysis across body positions</li>
                 <li>Coverage Gap Detection</li>
-                <li>Tower Placement Recommendations</li>
+                <li>Network Planning Tools</li>
                 <li>Multi-User Analysis</li>
               </ul>
             </div>
@@ -201,12 +195,11 @@ export default function Overview() {
 
       <div className="bg-white shadow rounded-lg p-6">
         <h2 className="text-xl font-semibold text-gray-900 mb-4">Methodology</h2>
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           {[
             'Data Collection',
             'Pattern Analysis',
-            'Gap Clustering',
-            'Tower Recommendations',
+            'Coverage Analysis',
             'Visualization',
           ].map((step, idx) => (
             <div key={idx} className="text-center">

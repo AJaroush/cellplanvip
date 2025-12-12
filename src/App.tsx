@@ -1,8 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom'
-import { BarChart3, Users, Radio, TrendingUp, Wifi, MapPin, Smartphone, Info } from 'lucide-react'
+import { BarChart3, Users, TrendingUp, Wifi, MapPin, Smartphone, Info } from 'lucide-react'
 import Overview from './pages/Overview'
 import UserAnalysis from './pages/UserAnalysis'
-import TowerRecommendations from './pages/TowerRecommendations'
 import Visualizations from './pages/Visualizations'
 import WiFiAnalyzer from './pages/WiFiAnalyzer'
 import LocalNetworkPlanner from './pages/LocalNetworkPlanner'
@@ -18,7 +17,6 @@ function Navigation() {
     { path: '/wifi', label: 'WiFi Analyzer', icon: Wifi },
     { path: '/indoor', label: 'Indoor Mapper', icon: Smartphone },
     { path: '/local', label: 'Local Network Planner', icon: MapPin },
-    { path: '/towers', label: 'Tower Recommendations', icon: Radio },
     { path: '/visualizations', label: 'Visualizations', icon: TrendingUp },
     { path: '/about', label: 'About', icon: Info },
   ]
@@ -71,7 +69,6 @@ function App() {
             <Route path="/wifi" element={<WiFiAnalyzer />} />
             <Route path="/indoor" element={<IndoorMapper />} />
             <Route path="/local" element={<LocalNetworkPlanner />} />
-            <Route path="/towers" element={<TowerRecommendations />} />
             <Route path="/visualizations" element={<Visualizations />} />
             <Route path="/about" element={<About />} />
           </Routes>

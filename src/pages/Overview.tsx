@@ -23,7 +23,7 @@ export default function Overview() {
     )
   }
 
-  // Default stats if API fails
+  // Default stats if API fails - ensure all properties are defined
   const defaultStats: SummaryStats = {
     total_records: 0,
     unique_cell_ids: 0,
@@ -37,7 +37,20 @@ export default function Overview() {
     coverage_area_percent: 0,
   }
 
-  const displayStats = stats || defaultStats
+  // Safely merge stats with defaults to ensure all properties exist
+  const displayStats: SummaryStats = stats ? {
+    total_records: stats.total_records ?? 0,
+    unique_cell_ids: stats.unique_cell_ids ?? 0,
+    mean_rssi: stats.mean_rssi ?? -90,
+    median_rssi: stats.median_rssi ?? -90,
+    weak_signal_count: stats.weak_signal_count ?? 0,
+    weak_signal_percent: stats.weak_signal_percent ?? 0,
+    good_signal_count: stats.good_signal_count ?? 0,
+    good_signal_percent: stats.good_signal_percent ?? 0,
+    recommended_towers: stats.recommended_towers ?? 0,
+    coverage_area_percent: stats.coverage_area_percent ?? 0,
+  } : defaultStats
+  
   const hasApiData = stats !== null
 
   return (
@@ -99,25 +112,25 @@ export default function Overview() {
         {[
           {
             label: 'Total Records',
-            value: displayStats.total_records.toLocaleString(),
+            value: (displayStats?.total_records ?? 0).toLocaleString(),
             icon: Signal,
             color: 'bg-blue-500',
           },
           {
             label: 'Unique Cell IDs',
-            value: displayStats.unique_cell_ids.toString(),
+            value: (displayStats?.unique_cell_ids ?? 0).toString(),
             icon: Radio,
             color: 'bg-green-500',
           },
           {
             label: 'Mean RSSI',
-            value: `${displayStats.mean_rssi.toFixed(2)} dBm`,
+            value: `${(displayStats?.mean_rssi ?? -90).toFixed(2)} dBm`,
             icon: TrendingUp,
             color: 'bg-purple-500',
           },
           {
             label: 'Recommended Towers',
-            value: displayStats.recommended_towers.toString(),
+            value: (displayStats?.recommended_towers ?? 0).toString(),
             icon: Radio,
             color: 'bg-orange-500',
           },
@@ -145,22 +158,22 @@ export default function Overview() {
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <span className="text-sm text-gray-600">Weak Signal</span>
-              <span className="text-lg font-semibold text-red-600">{displayStats.weak_signal_percent.toFixed(1)}%</span>
+              <span className="text-lg font-semibold text-red-600">{(displayStats?.weak_signal_percent ?? 0).toFixed(1)}%</span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2">
               <div
                 className="bg-red-500 h-2 rounded-full"
-                style={{ width: `${displayStats.weak_signal_percent}%` }}
+                style={{ width: `${displayStats?.weak_signal_percent ?? 0}%` }}
               ></div>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-gray-600">Good Signal</span>
-              <span className="text-lg font-semibold text-green-600">{displayStats.good_signal_percent.toFixed(1)}%</span>
+              <span className="text-lg font-semibold text-green-600">{(displayStats?.good_signal_percent ?? 0).toFixed(1)}%</span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2">
               <div
                 className="bg-green-500 h-2 rounded-full"
-                style={{ width: `${displayStats.good_signal_percent}%` }}
+                style={{ width: `${displayStats?.good_signal_percent ?? 0}%` }}
               ></div>
             </div>
           </div>

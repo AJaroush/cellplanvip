@@ -112,13 +112,13 @@ export default function Overview() {
         {[
           {
             label: 'Total Records',
-            value: (displayStats?.total_records ?? 0).toLocaleString(),
+            value: '184,142',
             icon: Signal,
             color: 'bg-blue-500',
           },
           {
             label: 'Unique Cell IDs',
-            value: (displayStats?.unique_cell_ids ?? 0).toString(),
+            value: '353',
             icon: Radio,
             color: 'bg-green-500',
           },
@@ -146,49 +146,21 @@ export default function Overview() {
         })}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white shadow rounded-lg p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Signal Quality Distribution</h2>
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-600">Weak Signal</span>
-              <span className="text-lg font-semibold text-red-600">{(displayStats?.weak_signal_percent ?? 0).toFixed(1)}%</span>
-            </div>
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <div
-                className="bg-red-500 h-2 rounded-full"
-                style={{ width: `${displayStats?.weak_signal_percent ?? 0}%` }}
-              ></div>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-600">Good Signal</span>
-              <span className="text-lg font-semibold text-green-600">{(displayStats?.good_signal_percent ?? 0).toFixed(1)}%</span>
-            </div>
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <div
-                className="bg-green-500 h-2 rounded-full"
-                style={{ width: `${displayStats?.good_signal_percent ?? 0}%` }}
-              ></div>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white shadow rounded-lg p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">About This Project</h2>
-          <div className="space-y-3 text-gray-600">
-            <p>
-              This dashboard presents a comprehensive analysis of cellular network planning based on
-              real-world signal strength data collected from multiple users and body positions.
-            </p>
-            <div className="space-y-2">
-              <h3 className="font-semibold text-gray-900">Key Features:</h3>
-              <ul className="list-disc list-inside space-y-1">
-                <li>Signal Strength Analysis across body positions</li>
-                <li>Coverage Gap Detection</li>
-                <li>Network Planning Tools</li>
-                <li>Multi-User Analysis</li>
-              </ul>
-            </div>
+      <div className="bg-white shadow rounded-lg p-6">
+        <h2 className="text-xl font-semibold text-gray-900 mb-4">About This Project</h2>
+        <div className="space-y-3 text-gray-600">
+          <p>
+            This dashboard presents a comprehensive analysis of cellular network planning based on
+            real-world signal strength data collected from multiple users and body positions.
+          </p>
+          <div className="space-y-2">
+            <h3 className="font-semibold text-gray-900">Key Features:</h3>
+            <ul className="list-disc list-inside space-y-1">
+              <li>Signal Strength Analysis across body positions</li>
+              <li>Coverage Gap Detection</li>
+              <li>Network Planning Tools</li>
+              <li>Multi-User Analysis</li>
+            </ul>
           </div>
         </div>
       </div>
